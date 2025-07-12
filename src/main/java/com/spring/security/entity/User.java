@@ -5,7 +5,8 @@ import org.springframework.security.core.userdetails.UserDetails;
 
 import java.util.Collection;
 import java.util.List;
-
+/*
+** Commenting the below code for Authentication provider
 public class User implements UserDetails {
     private String username;
     private String password;
@@ -53,3 +54,4 @@ public class User implements UserDetails {
         return true;
     }
 }
+*/

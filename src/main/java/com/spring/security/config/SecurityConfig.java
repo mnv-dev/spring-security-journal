@@ -2,23 +2,20 @@ package com.spring.security.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.http.HttpMethod;
-import org.springframework.jdbc.datasource.DriverManagerDataSource;
-import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.authentication.AuthenticationProvider;
+import org.springframework.security.core.userdetails.User;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.NoOpPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.security.provisioning.JdbcUserDetailsManager;
-import org.springframework.security.provisioning.UserDetailsManager;
-import org.springframework.security.web.SecurityFilterChain;
-import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
-
-import javax.sql.DataSource;
+import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 
 @Configuration
-public class SecurityConfig {
+public class SecurityConfig{
 
+    /*
+    ** Commenting this code for Implementing Authentication Provider
+    *
     @Bean
     public UserDetailsManager userDetailsService() {
         return new JdbcUserDetailsManager(dataSource());
@@ -36,9 +33,9 @@ public class SecurityConfig {
                 "");
     }
 
-    /*
-    This method is added now to allow one url to pass through csrf and allow it to run
-     */
+
+    // This method is added now to allow one url to pass through csrf and allow it to run
+
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
@@ -53,6 +50,7 @@ public class SecurityConfig {
                 );
         return http.build();
     }
+    */
 
     /*
     Commenting this to implement using UserDetailsManager
@@ -61,10 +59,6 @@ public class SecurityConfig {
         return new LoginUserDetailsService();
     }
     */
-
-    /*
-    ** InMemory Details Manager to validate credentials
-    * Commenting this section to validate through db
 
     @Bean
     public UserDetailsService userDetailsService() {
@@ -78,6 +72,14 @@ public class SecurityConfig {
 
         return userDetailsManager;
     }
-     */
 
+    @Bean
+    public PasswordEncoder passwordEncoder() {
+        return NoOpPasswordEncoder.getInstance();
+    }
+
+    @Bean
+    public AuthenticationProvider customAuthenticationProvider(UserDetailsService userDetailsService, PasswordEncoder passwordEncoder) {
+        return new CustomAuthenticationProvider(userDetailsService, passwordEncoder);
+    }
 }

@@ -1,6 +1,7 @@
 package com.spring.security.service;
 
-import com.spring.security.entity.User;
+/*
+* Commenting the below code for Authentication provider
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.provisioning.UserDetailsManager;
 import org.springframework.stereotype.Service;
@@ -21,5 +22,5 @@ public class UserService {
         userDetailsManager.createUser(user);
         return "User created successfully with username:: " + user.getUsername();
     }
-
 }
+*/
