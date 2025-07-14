@@ -24,6 +24,7 @@ public class CustomAuthenticationProvider implements AuthenticationProvider {
 
     @Override
     public Authentication authenticate(Authentication authentication) throws AuthenticationException {
+        // Validate the user with the provided credentials
         String password = authentication.getCredentials().toString();
         UserDetails userDetails = userDetailsService.loadUserByUsername(authentication.getName());
 
@@ -31,9 +32,11 @@ public class CustomAuthenticationProvider implements AuthenticationProvider {
             if (passwordEncoder.matches(password, userDetails.getPassword())) {
                 return new UsernamePasswordAuthenticationToken(userDetails.getUsername(), userDetails.getPassword());
             } else {
+                //throws Authentication Exception
                 throw new BadCredentialsException("Error!!");
             }
         } else {
+            //returns null If support method returns false OR If the user is not found i.e., UserDetails is null
             return null;
         }
     }
