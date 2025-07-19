@@ -1,3 +1,6 @@
+/*
+** Commenting below code to implement multiple authentication or 2 step authentication
+
 package com.spring.security.config;
 
 
@@ -47,7 +50,7 @@ public class CustomAuthenticationProvider implements AuthenticationProvider {
 
         if (Objects.nonNull(userDetails)) {
             if (passwordEncoder.matches(password, userDetails.getPassword())) {
-                return new UsernamePasswordAuthenticationToken(userDetails.getUsername(), userDetails.getPassword());
+                return new UserPasswordAuthToken(userDetails.getUsername(), userDetails.getPassword());
             } else {
                 //throws Authentication Exception
                 throw new BadCredentialsException("Error!!");
@@ -60,9 +63,7 @@ public class CustomAuthenticationProvider implements AuthenticationProvider {
 
     @Override
     public boolean supports(Class<?> authentication) {
-        return UsernamePasswordAuthenticationToken.class.equals(authentication);
+        return UserPasswordAuthToken.class.equals(authentication);
     }
-    */
-
-
 }
+*/

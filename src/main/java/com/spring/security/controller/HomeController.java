@@ -8,7 +8,7 @@ public class HomeController {
 
     @GetMapping("/hello")
     public String sayHello() {
-        return "Hello World.. Spring Security using Custom Authentication Filter!!";
+        return "Hello World.. Spring Security using 2 Step Authentication!!";
     }
 
     /*

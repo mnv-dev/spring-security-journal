@@ -1,22 +1,17 @@
-package com.spring.security.entity;
+package com.spring.security.model;
 
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import java.util.Collection;
 import java.util.List;
-/*
-** Commenting the below code for Authentication provider
-public class User implements UserDetails {
-    private String username;
-    private String password;
 
-    public void setUsername(String username) {
-        this.username = username;
-    }
+public class SecureUser implements UserDetails {
 
-    public void setPassword(String password) {
-        this.password = password;
+    private final Users user;
+
+    public SecureUser(Users user) {
+        this.user = user;
     }
 
     @Override
@@ -26,12 +21,12 @@ public class User implements UserDetails {
 
     @Override
     public String getPassword() {
-        return this.password;
+        return this.user.getPassword();
     }
 
     @Override
     public String getUsername() {
-        return this.username;
+        return this.user.getUsername();
     }
 
     @Override
@@ -54,4 +49,3 @@ public class User implements UserDetails {
         return true;
     }
 }
-*/

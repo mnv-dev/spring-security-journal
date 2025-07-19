@@ -1,6 +1,6 @@
 package com.spring.security.filter;
 
-import com.spring.security.config.CustomAuthenticationToken;
+import com.spring.security.auth.CustomAuthenticationToken;
 import jakarta.servlet.*;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.security.authentication.AuthenticationManager;

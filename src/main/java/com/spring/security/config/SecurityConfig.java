@@ -1,17 +1,15 @@
 package com.spring.security.config;
 
-import com.spring.security.filter.CustomAuthenticationFilter;
+import com.spring.security.filter.UsernamePasswordAuthFilter;
+import com.spring.security.provider.OTPAuthProvider;
+import com.spring.security.provider.UserPasswordAuthProvider;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
-import org.springframework.security.core.userdetails.User;
-import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.password.NoOpPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.www.BasicAuthenticationFilter;
 
@@ -59,11 +57,13 @@ public class SecurityConfig {
     /*
     Commenting this to implement using UserDetailsManager
     @Bean
-    public UserDetailsService userDetailsService() {
+    public CustomUserDetailsService userDetailsService() {
         return new LoginUserDetailsService();
     }
     */
 
+    /*
+    ** Commenting below code to use db creds
     @Bean
     public UserDetailsService userDetailsService() {
         InMemoryUserDetailsManager userDetailsManager = new InMemoryUserDetailsManager();
@@ -76,6 +76,7 @@ public class SecurityConfig {
 
         return userDetailsManager;
     }
+     */
 
     @Bean
     public PasswordEncoder passwordEncoder() {
@@ -84,26 +85,28 @@ public class SecurityConfig {
 
     @Bean
     public AuthenticationManager authenticationManager(HttpSecurity http,
-                                                       CustomAuthenticationProvider customAuthenticationProvider)
+                                                       UserPasswordAuthProvider userPasswordAuthProvider,
+                                                       OTPAuthProvider otpAuthProvider)
             throws Exception {
         AuthenticationManagerBuilder authBuilder = http.getSharedObject(AuthenticationManagerBuilder.class);
-        authBuilder.authenticationProvider(customAuthenticationProvider);
+        authBuilder.authenticationProvider(userPasswordAuthProvider)
+                .authenticationProvider(otpAuthProvider);
         return authBuilder.build();
     }
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http,
-                                           CustomAuthenticationFilter customAuthenticationFilter) throws Exception {
+                                           UsernamePasswordAuthFilter authFilter) throws Exception {
         http.authorizeRequests().anyRequest().permitAll();
 
-        http.addFilterAt(customAuthenticationFilter, BasicAuthenticationFilter.class);
+        http.addFilterAt(authFilter, BasicAuthenticationFilter.class);
         return http.build();
     }
 
     /*
     * Commenting below code to implement Custom Authentication Filter
     @Bean
-    public AuthenticationProvider customAuthenticationProvider(UserDetailsService userDetailsService, PasswordEncoder passwordEncoder) {
+    public AuthenticationProvider customAuthenticationProvider(CustomUserDetailsService userDetailsService, PasswordEncoder passwordEncoder) {
         return new CustomAuthenticationProvider(userDetailsService, passwordEncoder);
     }
     */
