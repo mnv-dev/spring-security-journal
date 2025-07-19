@@ -1,17 +1,22 @@
 package com.spring.security.config;
 
+import com.spring.security.filter.CustomAuthenticationFilter;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.security.authentication.AuthenticationProvider;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
+import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.password.NoOpPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.provisioning.InMemoryUserDetailsManager;
+import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.www.BasicAuthenticationFilter;
 
 @Configuration
-public class SecurityConfig{
+public class SecurityConfig {
 
     /*
     ** Commenting this code for Implementing Authentication Provider
@@ -35,7 +40,6 @@ public class SecurityConfig{
 
 
     // This method is added now to allow one url to pass through csrf and allow it to run
-
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
@@ -79,7 +83,30 @@ public class SecurityConfig{
     }
 
     @Bean
+    public AuthenticationManager authenticationManager(HttpSecurity http,
+                                                       CustomAuthenticationProvider customAuthenticationProvider)
+            throws Exception {
+        AuthenticationManagerBuilder authBuilder = http.getSharedObject(AuthenticationManagerBuilder.class);
+        authBuilder.authenticationProvider(customAuthenticationProvider);
+        return authBuilder.build();
+    }
+
+    @Bean
+    public SecurityFilterChain filterChain(HttpSecurity http,
+                                           CustomAuthenticationFilter customAuthenticationFilter) throws Exception {
+        http.authorizeRequests().anyRequest().permitAll();
+
+        http.addFilterAt(customAuthenticationFilter, BasicAuthenticationFilter.class);
+        return http.build();
+    }
+
+    /*
+    * Commenting below code to implement Custom Authentication Filter
+    @Bean
     public AuthenticationProvider customAuthenticationProvider(UserDetailsService userDetailsService, PasswordEncoder passwordEncoder) {
         return new CustomAuthenticationProvider(userDetailsService, passwordEncoder);
     }
+    */
+
+
 }
