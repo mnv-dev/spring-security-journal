@@ -1,7 +1,9 @@
 package com.spring.security.config;
 
+import com.spring.security.filter.ReceiptAuthFilter;
 import com.spring.security.filter.UsernamePasswordAuthFilter;
-import com.spring.security.provider.OTPAuthProvider;
+import com.spring.security.provider.ReceiptAuthProvider;
+import com.spring.security.provider.SecretKeyAuthProvider;
 import com.spring.security.provider.UserPasswordAuthProvider;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -86,20 +88,25 @@ public class SecurityConfig {
     @Bean
     public AuthenticationManager authenticationManager(HttpSecurity http,
                                                        UserPasswordAuthProvider userPasswordAuthProvider,
-                                                       OTPAuthProvider otpAuthProvider)
+                                                       SecretKeyAuthProvider secretKeyAuthProvider,
+                                                       ReceiptAuthProvider receiptAuthProvider)
             throws Exception {
         AuthenticationManagerBuilder authBuilder = http.getSharedObject(AuthenticationManagerBuilder.class);
         authBuilder.authenticationProvider(userPasswordAuthProvider)
-                .authenticationProvider(otpAuthProvider);
+                .authenticationProvider(secretKeyAuthProvider)
+                .authenticationProvider(receiptAuthProvider);
         return authBuilder.build();
     }
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http,
-                                           UsernamePasswordAuthFilter authFilter) throws Exception {
+                                           UsernamePasswordAuthFilter authFilter,
+                                           ReceiptAuthFilter receiptAuthFilter) throws Exception {
         http.authorizeRequests().anyRequest().permitAll();
 
-        http.addFilterAt(authFilter, BasicAuthenticationFilter.class);
+        http.addFilterBefore(authFilter, BasicAuthenticationFilter.class)
+                .addFilterAfter(receiptAuthFilter, UsernamePasswordAuthFilter.class);
+
         return http.build();
     }
 

@@ -1,8 +1,9 @@
 package com.spring.security.filter;
 
-import com.spring.security.auth.OTPAuthToken;
+import com.spring.security.auth.SecretKeyAuthToken;
 import com.spring.security.auth.UserPasswordAuthToken;
 import com.spring.security.model.UserSecretKey;
+import com.spring.security.repository.ReceiptManager;
 import com.spring.security.service.UserSecretKeyService;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -23,11 +24,14 @@ public class UsernamePasswordAuthFilter extends OncePerRequestFilter {
 
     private final AuthenticationManager authenticationManager;
     private final UserSecretKeyService userSecretKeyService;
+    private final ReceiptManager receiptManager;
 
     public UsernamePasswordAuthFilter(AuthenticationManager authenticationManager,
-                                      UserSecretKeyService userSecretKeyService) {
+                                      UserSecretKeyService userSecretKeyService,
+                                      ReceiptManager receiptManager) {
         this.authenticationManager = authenticationManager;
         this.userSecretKeyService = userSecretKeyService;
+        this.receiptManager = receiptManager;
     }
 
     @Override
@@ -49,9 +53,15 @@ public class UsernamePasswordAuthFilter extends OncePerRequestFilter {
 
             userSecretKeyService.save(userSecretKey);
         } else {
-            Authentication authentication = authenticationManager.authenticate(new OTPAuthToken(uname, key));
-
-            response.setHeader("Authorization", UUID.randomUUID().toString());
+            Authentication authentication = authenticationManager.authenticate(new SecretKeyAuthToken(uname, key));
+            String authKey = UUID.randomUUID().toString();
+            receiptManager.add(authKey);
+            response.setHeader("Authorization", authKey);
         }
+    }
+
+    @Override
+    protected boolean shouldNotFilter(HttpServletRequest request) throws ServletException {
+        return !request.getServletPath().equals("/login");
     }
 }

@@ -1,6 +1,6 @@
 package com.spring.security.provider;
 
-import com.spring.security.auth.OTPAuthToken;
+import com.spring.security.auth.SecretKeyAuthToken;
 import com.spring.security.model.UserSecretKey;
 import com.spring.security.service.UserSecretKeyService;
 import org.springframework.security.authentication.AuthenticationProvider;
@@ -13,10 +13,10 @@ import java.util.List;
 import java.util.Optional;
 
 @Component
-public class OTPAuthProvider implements AuthenticationProvider {
+public class SecretKeyAuthProvider implements AuthenticationProvider {
     private final UserSecretKeyService userSecretKeyService;
 
-    public OTPAuthProvider(UserSecretKeyService userSecretKeyService) {
+    public SecretKeyAuthProvider(UserSecretKeyService userSecretKeyService) {
         this.userSecretKeyService = userSecretKeyService;
     }
 
@@ -25,7 +25,7 @@ public class OTPAuthProvider implements AuthenticationProvider {
         Optional<UserSecretKey> userSecretKey = userSecretKeyService.getByUsername(authentication.getName());
 
         if (userSecretKey.isPresent() && userSecretKey.get().getKey().equals(authentication.getCredentials())) {
-            return new OTPAuthToken(authentication.getName(),
+            return new SecretKeyAuthToken(authentication.getName(),
                     authentication.getCredentials(), List.of(() -> "read"));
         }
 
@@ -34,6 +34,6 @@ public class OTPAuthProvider implements AuthenticationProvider {
 
     @Override
     public boolean supports(Class<?> authentication) {
-        return OTPAuthToken.class.equals(authentication);
+        return SecretKeyAuthToken.class.equals(authentication);
     }
 }
