@@ -1,5 +1,7 @@
 package com.spring.security.config;
 
+import com.spring.security.auth.CustomCsrfToken;
+import com.spring.security.filter.CustomCsrfFilter;
 import com.spring.security.filter.ReceiptAuthFilter;
 import com.spring.security.filter.UsernamePasswordAuthFilter;
 import com.spring.security.provider.ReceiptAuthProvider;
@@ -14,6 +16,7 @@ import org.springframework.security.crypto.password.NoOpPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.www.BasicAuthenticationFilter;
+import org.springframework.security.web.csrf.CsrfFilter;
 
 @Configuration
 public class SecurityConfig {
@@ -101,11 +104,16 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http,
                                            UsernamePasswordAuthFilter authFilter,
-                                           ReceiptAuthFilter receiptAuthFilter) throws Exception {
+                                           ReceiptAuthFilter receiptAuthFilter,
+                                           CustomCsrfFilter customCsrfFilter) throws Exception {
         http.authorizeRequests().anyRequest().permitAll();
 
         http.addFilterBefore(authFilter, BasicAuthenticationFilter.class)
-                .addFilterAfter(receiptAuthFilter, UsernamePasswordAuthFilter.class);
+                .addFilterAfter(receiptAuthFilter, UsernamePasswordAuthFilter.class)
+                .addFilterAfter(customCsrfFilter, CsrfFilter.class);
+
+        http.csrf(csrf ->
+                csrf.csrfTokenRepository(new CustomCsrfToken()));
 
         return http.build();
     }
